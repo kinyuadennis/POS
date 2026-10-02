@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg viewBox="0 0 160 50" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="imGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0033A1"/>
+      <stop offset="100%" stop-color="#001F60"/>
+    </linearGradient>
+  </defs>
+  <!-- Background Badge -->
+  <rect width="160" height="50" rx="8" fill="url(#imGradient)"/>
+  
+  <!-- "I" -->
+  <text x="16" y="35" font-family="'Helvetica Neue', Arial, sans-serif" font-weight="900" font-size="30" fill="#FFFFFF" letter-spacing="1">I</text>
+  
+  <!-- "&" in distinct red/accent -->
+  <text x="32" y="35" font-family="'Georgia', serif" font-style="italic" font-weight="bold" font-size="31" fill="#E31837">&amp;</text>
+  
+  <!-- "M" -->
+  <text x="56" y="35" font-family="'Helvetica Neue', Arial, sans-serif" font-weight="900" font-size="30" fill="#FFFFFF" letter-spacing="1">M</text>
+  
+  <!-- Vertical separator bar -->
+  <line x1="92" y1="12" x2="92" y2="38" stroke="#FFFFFF" stroke-width="1.5" opacity="0.4"/>
+  
+  <!-- "BANK" -->
+  <text x="100" y="27" font-family="'Helvetica Neue', Arial, sans-serif" font-weight="800" font-size="14" fill="#FFFFFF" letter-spacing="2">BANK</text>
+  <text x="100" y="38" font-family="'Helvetica Neue', Arial, sans-serif" font-weight="500" font-size="8" fill="#93C5FD" letter-spacing="1">PAY</text>
+</svg>

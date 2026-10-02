@@ -1,0 +1,23 @@
+---
+description: Restyle list and form pages to the Users management design (theme colour, search card, DataTables).
+alwaysApply: false
+---
+
+# Page design
+
+When the user asks to restyle a page like Users, Contacts, Sale Return List, or “like the design file”, follow `docs/page-design.md`.
+
+Do not use AdminLTE `components.filters` / `components.widget` for restyled list pages.
+
+Must:
+
+- Resolve `$primary_hex` from `session('business.theme_color')`. Primary buttons (Add, Filters) use that fill, not grey.
+- White `content-header` (title + subtitle) + body tint `{{ $primary_hex }}0d`.
+- White `search-section` then white `datatable-section` (12px radius, `#e2e8f0` border).
+- Search row: search, optional Filters, optional Add. Filters panel **above** Show entries / Export; hidden until toggled.
+- Hide native DataTables length/buttons/filter. Custom search, length 25, CSV/Excel.
+- Skeleton rows, nowrap cells. If `scrollX` is on, write footer totals to **all** cloned footers via the DataTables wrapper and classes — `$('#footer_id')` shows 0.
+- Date pickers: `parentEl: 'body'`, `alwaysShowCalendars: true`, close on apply. Never `display:flex !important` on `.daterangepicker`.
+- Keep existing behaviour, permissions, and report formulas. Bump `asset_version` only when changing `public/js/*.js`.
+
+Canonical: `resources/views/manage_user/index.blade.php`, `resources/views/sell_return/index.blade.php`.

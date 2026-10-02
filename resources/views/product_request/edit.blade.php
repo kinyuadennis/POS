@@ -1,0 +1,655 @@
+@extends('layouts.app')
+@section('title', __('Edit Product Request') . ' - ' . $productRequest->request_no)
+
+@section('content')
+
+@php
+    $theme_color = session('business.theme_color', 'blue');
+    $color_map = [
+        'blue' => '#3c8dbc',
+        'purple' => '#605ca8',
+        'green' => '#00a65a',
+        'red' => '#dd4b39',
+        'yellow' => '#f39c12',
+        'orange' => '#ff851b',
+        'sky' => '#00c0ef',
+        'primary' => '#3c8dbc'
+    ];
+    $primary_hex = isset($color_map[$theme_color]) ? $color_map[$theme_color] : '#3c8dbc';
+@endphp
+
+<style>
+    .content-header {
+        background-color: #ffffff !important;
+        padding: 16px 24px !important;
+        border-bottom: 1px solid #cbd5e160 !important;
+        box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05) !important;
+    }
+
+    .product-request-content {
+        background-color: {{ $primary_hex }}0d !important;
+        padding: 24px !important;
+        min-height: calc(100vh - 100px);
+        overflow: visible;
+    }
+
+    .form-card {
+        background-color: #ffffff !important;
+        border: 1px solid #e2e8f0 !important;
+        border-radius: 12px !important;
+        padding: 24px !important;
+        margin-bottom: 24px !important;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03) !important;
+    }
+
+    .form-card-title {
+        font-size: 17px !important;
+        font-weight: 700 !important;
+        color: #1e293b !important;
+        margin-top: 0 !important;
+        margin-bottom: 20px !important;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding-bottom: 12px;
+        border-bottom: 1px solid #f1f5f9;
+    }
+
+    .form-label {
+        font-size: 13px !important;
+        font-weight: 500 !important;
+        color: #475569 !important;
+        margin-bottom: 6px !important;
+        display: block;
+    }
+
+    .form-control-custom {
+        height: 42px !important;
+        border-radius: 8px !important;
+        border: 1px solid #cbd5e1 !important;
+        font-size: 14px !important;
+        box-shadow: none !important;
+    }
+
+    .btn-submit-request {
+        background: {{ $primary_hex }} !important;
+        color: #ffffff !important;
+        height: 42px !important;
+        padding: 0 28px !important;
+        border-radius: 20px !important;
+        font-weight: 700 !important;
+        border: none !important;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1) !important;
+        transition: all 0.2s ease-in-out !important;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+    }
+    .btn-submit-request:hover {
+        opacity: 0.9 !important;
+        transform: translateY(-1px) !important;
+        color: #ffffff !important;
+    }
+
+    .btn-save-draft {
+        background: #ffffff !important;
+        color: #475569 !important;
+        height: 42px !important;
+        padding: 0 24px !important;
+        border-radius: 8px !important;
+        font-weight: 600 !important;
+        border: 1px solid #cbd5e1 !important;
+        box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05) !important;
+        transition: all 0.2s ease-in-out !important;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+    }
+    .btn-save-draft:hover {
+        background: #f8fafc !important;
+        color: #1e293b !important;
+    }
+
+    #request_lines_table th {
+        background-color: #f8fafc !important;
+        color: #475569 !important;
+        font-size: 12px !important;
+        font-weight: 600 !important;
+        text-transform: uppercase !important;
+        padding: 12px 14px !important;
+        border-bottom: 2px solid #e2e8f0 !important;
+    }
+    #request_lines_table td {
+        padding: 12px 14px !important;
+        vertical-align: middle !important;
+    }
+
+        /* Datepicker container & dropdown positioning */
+    #required_date_container {
+        position: relative !important;
+    }
+    #required_date_container .datepicker {
+        z-index: 1050 !important;
+        border-radius: 8px !important;
+        border: 1px solid #cbd5e1 !important;
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05) !important;
+        padding: 8px !important;
+    }
+
+    /* Product Search Autocomplete Anchored Dropdown */
+    #product_search_wrapper {
+        position: relative !important;
+        width: 100% !important;
+    }
+
+    #product_search_wrapper .ui-autocomplete {
+        position: absolute !important;
+        top: 100% !important;
+        left: 0 !important;
+        right: 0 !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+        max-height: 320px !important;
+        overflow-y: auto !important;
+        overflow-x: hidden !important;
+        z-index: 99999 !important;
+        background: #ffffff !important;
+        border: 1px solid #cbd5e1 !important;
+        border-radius: 8px !important;
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05) !important;
+        margin-top: 4px !important;
+        padding: 4px 0 !important;
+        list-style: none !important;
+    }
+
+    #product_search_wrapper .ui-autocomplete .ui-menu-item {
+        padding: 0 !important;
+        margin: 0 !important;
+        list-style: none !important;
+    }
+
+    #product_search_wrapper .ui-autocomplete .ui-menu-item a {
+        display: block !important;
+        padding: 10px 16px !important;
+        color: #1e293b !important;
+        text-decoration: none !important;
+        border-bottom: 1px solid #f1f5f9 !important;
+        cursor: pointer !important;
+    }
+
+    #product_search_wrapper .ui-autocomplete .ui-menu-item:last-child a {
+        border-bottom: none !important;
+    }
+
+    #product_search_wrapper .ui-autocomplete .ui-menu-item a:hover,
+    #product_search_wrapper .ui-autocomplete .ui-menu-item a.ui-state-active,
+    #product_search_wrapper .ui-autocomplete .ui-menu-item.ui-state-focus a {
+        background-color: #f1f5f9 !important;
+        color: #0f172a !important;
+    }
+
+    @media (max-width: 767px) {
+        .content-header { padding: 12px 16px !important; }
+        .product-request-content { padding: 12px !important; }
+        .form-card { padding: 16px !important; }
+    }
+</style>
+
+<!-- Header -->
+<section class="content-header tw-flex tw-justify-between tw-items-center no-print">
+    <div>
+        <h1 class="tw-text-xl md:tw-text-3xl tw-font-bold tw-text-black" style="margin: 0;">
+            @lang('Edit Product Request') <span style="color: {{ $primary_hex }};">#{{ $productRequest->request_no }}</span>
+        </h1>
+        <p class="tw-text-sm md:tw-text-base tw-text-gray-700 tw-font-semibold tw-m-0">
+            @lang('Status'): <span class="label label-info" style="font-size: 12px; vertical-align: middle;">{{ ucfirst(str_replace('_', ' ', $productRequest->status)) }}</span>
+        </p>
+    </div>
+    <div>
+        <a href="{{ action([\App\Http\Controllers\ProductRequestController::class, 'show'], [$productRequest->id]) }}" class="btn btn-default" style="height: 42px; border-radius: 8px; border: 1px solid #cbd5e1; font-weight: 600; display: inline-flex; align-items: center; gap: 8px;">
+            <i class="fa fa-eye"></i> @lang('View Details')
+        </a>
+    </div>
+</section>
+
+<!-- Content -->
+<section class="content product-request-content no-print">
+    {!! Form::open(['url' => action([\App\Http\Controllers\ProductRequestController::class, 'update'], [$productRequest->id]), 'method' => 'put', 'id' => 'product_request_edit_form']) !!}
+    <input type="hidden" name="submit_request" id="submit_request" value="1">
+
+    @if($productRequest->status == 'changes_requested')
+        <div style="background: #fffbeb; border: 1px solid #fde68a; border-radius: 12px; padding: 18px 20px; margin-bottom: 24px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); display: flex; align-items: flex-start; gap: 14px;">
+            <div style="width: 38px; height: 38px; border-radius: 10px; background: #fef3c7; color: #d97706; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0;">
+                <i class="fa fa-exclamation-triangle"></i>
+            </div>
+            <div>
+                <h4 style="margin: 0 0 6px 0; font-size: 15px; font-weight: 700; color: #92400e;">@lang('Main Store Requested Modifications')</h4>
+                <p style="margin: 0; font-size: 13px; color: #b45309; line-height: 1.5;">
+                    <strong>@lang('Manager Note'):</strong> {{ $productRequest->notes ?? __('Please review requested quantities or products and resubmit.') }}
+                </p>
+            </div>
+        </div>
+    @endif
+
+    <!-- Card 1: Requisition Details -->
+    <div class="form-card">
+        <h3 class="form-card-title">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="{{ $primary_hex }}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M3 21l18 0" /><path d="M5 21v-14l8 -4v18" /><path d="M19 21v-10l-6 -4" /><path d="M9 9l0 .01" /><path d="M9 12l0 .01" /><path d="M9 15l0 .01" /><path d="M9 18l0 .01" /></svg>
+            @lang('Requisition Details')
+        </h3>
+
+        <div class="row">
+            <div class="col-sm-4">
+                <div class="form-group">
+                    <label class="form-label">{!! __('Destination Shop') . ':*' !!}</label>
+                    <input type="text" class="form-control form-control-custom" value="{{ $productRequest->requestingLocation->name ?? '' }}" readonly style="background: #f8fafc; color: #475569; font-weight: 600;">
+                    <input type="hidden" name="requesting_location_id" id="requesting_location_id" value="{{ $productRequest->requesting_location_id }}">
+                </div>
+            </div>
+
+            <div class="col-sm-4">
+                <div class="form-group">
+                    <label class="form-label">{!! __('Source Main Store') . ':*' !!}</label>
+                    <input type="text" class="form-control form-control-custom" value="{{ $productRequest->sourceLocation->name ?? '' }}" readonly style="background: #f8fafc; color: #475569; font-weight: 600;">
+                    <input type="hidden" name="source_location_id" id="source_location_id" value="{{ $productRequest->source_location_id }}">
+                </div>
+            </div>
+
+            <div class="col-sm-4">
+                <div class="form-group">
+                    <label class="form-label">@lang('Priority'):</label>
+                    {!! Form::select('priority', [
+                        'low' => __('Low'),
+                        'medium' => __('Medium'),
+                        'high' => __('High'),
+                        'urgent' => __('Urgent')
+                    ], $productRequest->priority, [
+                        'class' => 'form-control select2',
+                        'id' => 'priority',
+                        'style' => 'width: 100%;'
+                    ]) !!}
+                </div>
+            </div>
+        </div>
+
+        <div class="row tw-mt-2">
+            <div class="col-sm-4">
+                <div class="form-group">
+                    <label class="form-label">@lang('Date Needed By'):</label>
+                    <div class="tw-relative" id="required_date_container" style="position: relative;">
+                        <input type="text" name="required_date" id="required_date" class="form-control form-control-custom" value="{{ $productRequest->required_date ? @format_date($productRequest->required_date) : null }}" autocomplete="off" style="padding-left: 38px;">
+                        <span style="position: absolute; left: 12px; top: 11px; color: #94a3b8;">
+                            <i class="fa fa-calendar"></i>
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-sm-8">
+                <div class="form-group">
+                    <label class="form-label">@lang('Request Notes / Justification'):</label>
+                    {!! Form::text('notes', $productRequest->notes, [
+                        'class' => 'form-control form-control-custom',
+                        'placeholder' => __('Notes or justification...')
+                    ]) !!}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Card 2: Product Lines -->
+    <div class="form-card">
+        <h3 class="form-card-title">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="{{ $primary_hex }}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M12 3l8 4.5l0 9l-8 4.5l-8 -4.5l0 -9l8 -4.5" /><path d="M12 12l8 -4.5" /><path d="M12 12l0 9" /><path d="M12 12l-8 -4.5" /></svg>
+            @lang('Requested Products')
+        </h3>
+
+        <!-- Search input -->
+        <div class="row">
+            <div class="col-sm-8 col-sm-offset-2 tw-mb-4">
+                <div class="tw-relative" id="product_search_wrapper">
+                    <span style="position: absolute; left: 14px; top: 12px; color: #94a3b8; display: flex; align-items: center; justify-content: center;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                        </svg>
+                    </span>
+                    <input type="text" id="search_product_for_request"
+                           placeholder="Type product name or SKU to add items..."
+                           class="form-control"
+                           style="padding-left: 42px; border-radius: 8px; height: 42px; width: 100%; border: 1px solid #cbd5e1; outline: none; box-shadow: inset 0 2px 4px 0 rgba(0, 0, 0, 0.05); font-size: 14px;">
+                </div>
+            </div>
+        </div>
+
+        <!-- Table of Lines -->
+        <div class="table-responsive tw-mt-2">
+            <table class="table table-bordered table-hover" id="request_lines_table" style="width: 100%;">
+                <thead>
+                    <tr>
+                        <th style="width: 32%;">@lang('Product Name & SKU')</th>
+                        <th style="width: 14%;" class="text-center">@lang('Your Shop Stock')</th>
+                        <th style="width: 14%;" class="text-center">@lang('Main Store Stock')</th>
+                        <th style="width: 15%;" class="text-center">@lang('Requested Qty') *</th>
+                        <th style="width: 20%;">@lang('Line Note / Comment')</th>
+                        <th style="width: 5%;" class="text-center"><i class="fa fa-trash text-muted"></i></th>
+                    </tr>
+                </thead>
+                <tbody id="request_lines_tbody">
+                    @php $index = 0; @endphp
+                    @foreach($productRequest->lines as $line)
+                        @php
+                            $variation = $line->variation;
+                            $product = $line->product;
+                            $shopVld = \App\VariationLocationDetails::where('variation_id', $line->variation_id)
+                                ->where('location_id', $productRequest->requesting_location_id)->first();
+                            $shopStock = $shopVld ? (float)$shopVld->qty_available : 0;
+
+                            $sourceVld = \App\VariationLocationDetails::where('variation_id', $line->variation_id)
+                                ->where('location_id', $productRequest->source_location_id)->first();
+                            $sourceStock = $sourceVld ? (float)$sourceVld->qty_available : 0;
+                        @endphp
+                        <tr id="row_{{ $line->variation_id }}">
+                            <td>
+                                <div style="font-weight: 600; color: #1e293b;">{{ $product->name ?? '' }}</div>
+                                @if($variation && $variation->name != 'DUMMY')
+                                    <div style="color: #64748b; font-size: 12px;">({{ $variation->name }})</div>
+                                @endif
+                                <small style="color: #94a3b8; font-size: 11px;">SKU: {{ $variation->sub_sku ?? '' }}</small>
+                                <input type="hidden" name="products[{{ $index }}][variation_id]" value="{{ $line->variation_id }}">
+                            </td>
+                            <td class="text-center">
+                                <span style="display:inline-block; padding: 4px 10px; border-radius: 6px; font-size: 12px; font-weight: 600; background: #f1f5f9; color: #475569;">
+                                    {{ number_format($shopStock, 2) }}
+                                </span>
+                            </td>
+                            <td class="text-center">
+                                <span style="display:inline-block; padding: 4px 10px; border-radius: 6px; font-size: 12px; font-weight: 600; background: {{ $sourceStock > 0 ? '#dcfce7' : '#fee2e2' }}; color: {{ $sourceStock > 0 ? '#16a34a' : '#dc2626' }};">
+                                    {{ number_format($sourceStock, 2) }}
+                                </span>
+                                <input type="hidden" id="source_stock_{{ $line->variation_id }}" value="{{ $sourceStock }}">
+                            </td>
+                            <td class="text-center">
+                                <div class="input-group input-group-sm" style="max-width: 140px; margin: 0 auto;">
+                                    <input type="number" 
+                                           name="products[{{ $index }}][quantity]" 
+                                           id="qty_input_{{ $line->variation_id }}"
+                                           data-var-id="{{ $line->variation_id }}"
+                                           class="form-control text-center requested_qty_input" 
+                                           value="{{ (float)$line->requested_quantity }}" 
+                                           min="0.01" 
+                                           step="any" 
+                                           style="height: 38px; border-radius: 6px 0 0 6px; border: 1px solid #cbd5e1; font-weight: 600;"
+                                           required>
+                                    <span class="input-group-addon" style="border-radius: 0 6px 6px 0; background: #f8fafc; border: 1px solid #cbd5e1; border-left: 0; font-size: 12px;">{{ $product->unit->short_name ?? 'units' }}</span>
+                                </div>
+                                <span class="stock-warning text-warning tw-text-xs" id="warning_{{ $line->variation_id }}" style="{{ (float)$line->requested_quantity > $sourceStock ? '' : 'display: none;' }} font-size: 11px; margin-top: 4px;">
+                                    <i class="fa fa-exclamation-triangle"></i> Exceeds Main Store
+                                </span>
+                            </td>
+                            <td>
+                                <input type="text" name="products[{{ $index }}][notes]" class="form-control input-sm" value="{{ $line->notes }}" placeholder="Optional note" style="height: 38px; border-radius: 6px; border: 1px solid #cbd5e1;">
+                            </td>
+                            <td class="text-center">
+                                <button type="button" class="btn btn-danger btn-xs btn-remove-row" data-var-id="{{ $line->variation_id }}" style="border-radius: 6px; padding: 4px 8px;">
+                                    <i class="fa fa-times"></i>
+                                </button>
+                            </td>
+                        </tr>
+                        @php $index++; @endphp
+                    @endforeach
+                    <tr id="empty_row" style="{{ count($productRequest->lines) > 0 ? 'display: none;' : '' }}">
+                        <td colspan="6" class="text-center text-muted" style="padding: 35px 20px;">
+                            <div style="font-size: 32px; color: #cbd5e1; margin-bottom: 8px;">
+                                <i class="fa fa-box-open"></i>
+                            </div>
+                            <div style="font-weight: 600; color: #64748b; font-size: 14px;">@lang('No products in this request')</div>
+                        </td>
+                    </tr>
+                </tbody>
+                <tfoot>
+                    <tr style="background: #f8fafc; font-weight: 700;">
+                        <td colspan="3" class="text-right" style="padding: 14px; color: #1e293b;">@lang('Total Requested Units'):</td>
+                        <td class="text-center" style="padding: 14px;">
+                            <span id="total_requested_units" style="font-size: 16px; color: {{ $primary_hex }}; font-weight: 700;">0.00</span>
+                        </td>
+                        <td colspan="2"></td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+    </div>
+
+    <!-- Actions Bar -->
+    <div class="row tw-mt-6 tw-mb-8">
+        <div class="col-md-12 text-center" style="display: flex; justify-content: center; gap: 16px; align-items: center;">
+            <button type="button" id="btn_save_draft" class="btn-save-draft">
+                <i class="fa fa-save"></i> @lang('Save as Draft')
+            </button>
+            <button type="button" id="btn_submit_request" class="btn-submit-request">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M10 14l11 -11" /><path d="M21 3l-6.5 18a.55 .55 0 0 1 -1 0l-3.5 -7l-7 -3.5a.55 .55 0 0 1 0 -1l18 -6.5" /></svg>
+                @lang('Submit Request for Approval')
+            </button>
+        </div>
+    </div>
+    {!! Form::close() !!}
+</section>
+@endsection
+
+@section('javascript')
+<script type="text/javascript">
+$(document).ready(function() {
+    let rowCount = {{ count($productRequest->lines) }};
+    const addedVariations = new Set();
+
+    @foreach($productRequest->lines as $l)
+        addedVariations.add({{ $l->variation_id }});
+    @endforeach
+
+    recalcTotals();
+
+    if ($('#required_date').length) {
+        $('#required_date').datepicker({
+            autoclose: true,
+            format: typeof datepicker_date_format !== 'undefined' ? datepicker_date_format : 'yyyy-mm-dd',
+            startDate: 'today',
+            container: '#required_date_container',
+            orientation: 'bottom auto'
+        });
+
+        $('#scrollable-container, window').on('scroll', function() {
+            $('#required_date').datepicker('hide');
+        });
+    }
+
+    $('#search_product_for_request').autocomplete({
+        appendTo: '#product_search_wrapper',
+        position: { my: "left top+4", at: "left bottom", of: "#search_product_for_request", collision: "flipfit" },
+        source: function(request, response) {
+            const requestingId = $('#requesting_location_id').val();
+            const sourceId = $('#source_location_id').val();
+            $.ajax({
+                url: "{{ action([\App\Http\Controllers\ProductRequestController::class, 'searchProducts']) }}",
+                dataType: 'json',
+                data: {
+                    term: request.term,
+                    requesting_location_id: requestingId,
+                    source_location_id: sourceId
+                },
+                success: function(data) {
+                    response($.map(data, function(item) {
+                        const prodName = item.product_name || item.name || 'Product';
+                        const varName = (item.variation_name && item.variation_name !== 'DUMMY') ? ' (' + item.variation_name + ')' : '';
+                        const sku = item.sub_sku ? ' [' + item.sub_sku + ']' : '';
+                        return {
+                            label: prodName + varName + sku,
+                            value: prodName + (item.variation_name && item.variation_name !== 'DUMMY' ? ' - ' + item.variation_name : ''),
+                            item: item
+                        };
+                    }));
+                }
+            });
+        },
+        minLength: 2,
+        select: function(event, ui) {
+            const productData = ui.item ? (ui.item.item || ui.item) : null;
+            if (productData) {
+                addProductRow(productData);
+            }
+            $(this).val('');
+            return false;
+        }
+    }).autocomplete('instance')._renderItem = function(ul, item) {
+        const p = item.item || item;
+        const prodName = p.product_name || p.name || item.label || 'Product';
+        const varName = (p.variation_name && p.variation_name !== 'DUMMY') ? `<span style="color:#64748b;font-size:12px;">(${p.variation_name})</span>` : '';
+        const mainStock = parseFloat(p.source_stock || 0);
+        const shopStock = parseFloat(p.shop_stock || 0);
+        const mainStockClass = mainStock > 0 ? '#16a34a' : '#dc2626';
+        const sku = p.sub_sku || '';
+        
+        const html = `<a>
+            <div style="font-weight: 600; color: #1e293b;">
+                ${prodName} ${varName}
+            </div>
+            <div style="font-size: 11px; color: #64748b; margin-top: 2px;">
+                ${sku ? `<span>SKU: <code>${sku}</code></span> | 
+                <span>Shop Stock: <strong>${shopStock.toFixed(2)}</strong></span> | 
+                <span style="color: ${mainStockClass}; font-weight: 600;">Main Store: ${mainStock.toFixed(2)}</span>
+            </div>
+        </a>`;
+
+        return $('<li>').append(html).appendTo(ul);
+    };
+
+    function addProductRow(item) {
+        if (!item || !item.variation_id) {
+            toastr.error('Unable to select product.');
+            return;
+        }
+
+        if (addedVariations.has(item.variation_id)) {
+            toastr.warning('Product already added. Adjust quantity instead.');
+            $(`#qty_input_${item.variation_id}`).focus();
+            return;
+        }
+
+        $('#empty_row').hide();
+        addedVariations.add(item.variation_id);
+        const index = rowCount++;
+
+        const prodName = item.product_name || item.name || 'Product';
+        const varName = (item.variation_name && item.variation_name !== 'DUMMY') ? item.variation_name : '';
+        const shopStockDisplay = parseFloat(item.shop_stock || 0).toFixed(2);
+        const sourceStockDisplay = parseFloat(item.source_stock || 0).toFixed(2);
+        const unitDisplay = item.unit || 'units';
+
+        const tr = `
+            <tr id="row_${item.variation_id}">
+                <td>
+                    <div style="font-weight: 600; color: #1e293b;">${prodName}</div>
+                    ${varName ? '<div style="color: #64748b; font-size: 12px;">' + varName + '</div>' : ''}
+                    <small style="color: #94a3b8; font-size: 11px;">SKU: ${item.sub_sku || ''}</small>
+                    <input type="hidden" name="products[${index}][variation_id]" value="${item.variation_id}">
+                </td>
+                <td class="text-center">
+                    <span style="display:inline-block; padding: 4px 10px; border-radius: 6px; font-size: 12px; font-weight: 600; background: #f1f5f9; color: #475569;">
+                        ${parseFloat(item.shop_stock).toFixed(2)} ${item.unit || ''}
+                    </span>
+                </td>
+                <td class="text-center">
+                    <span style="display:inline-block; padding: 4px 10px; border-radius: 6px; font-size: 12px; font-weight: 600; background: ${item.source_stock > 0 ? '#dcfce7' : '#fee2e2'}; color: ${item.source_stock > 0 ? '#16a34a' : '#dc2626'};">
+                        ${parseFloat(item.source_stock).toFixed(2)} ${item.unit || ''}
+                    </span>
+                    <input type="hidden" id="source_stock_${item.variation_id}" value="${item.source_stock}">
+                </td>
+                <td class="text-center">
+                    <div class="input-group input-group-sm" style="max-width: 140px; margin: 0 auto;">
+                        <input type="number" 
+                               name="products[${index}][quantity]" 
+                               id="qty_input_${item.variation_id}"
+                               data-var-id="${item.variation_id}"
+                               class="form-control text-center requested_qty_input" 
+                               value="1" 
+                               min="0.01" 
+                               step="any" 
+                               style="height: 38px; border-radius: 6px 0 0 6px; border: 1px solid #cbd5e1; font-weight: 600;"
+                               required>
+                        <span class="input-group-addon" style="border-radius: 0 6px 6px 0; background: #f8fafc; border: 1px solid #cbd5e1; border-left: 0; font-size: 12px;">${item.unit || 'units'}</span>
+                    </div>
+                    <span class="stock-warning text-warning tw-text-xs" id="warning_${item.variation_id}" style="display: none; font-size: 11px; margin-top: 4px;">
+                        <i class="fa fa-exclamation-triangle"></i> Exceeds Main Store
+                    </span>
+                </td>
+                <td>
+                    <input type="text" name="products[${index}][notes]" class="form-control input-sm" placeholder="Optional note" style="height: 38px; border-radius: 6px; border: 1px solid #cbd5e1;">
+                </td>
+                <td class="text-center">
+                    <button type="button" class="btn btn-danger btn-xs btn-remove-row" data-var-id="${item.variation_id}" style="border-radius: 6px; padding: 4px 8px;">
+                        <i class="fa fa-times"></i>
+                    </button>
+                </td>
+            </tr>
+        `;
+
+        $('#request_lines_tbody').append(tr);
+        checkRowStockWarning(item.variation_id);
+        recalcTotals();
+    }
+
+    $(document).on('click', '.btn-remove-row', function() {
+        const varId = $(this).data('var-id');
+        $(`#row_${varId}`).remove();
+        addedVariations.delete(varId);
+        if (addedVariations.size === 0) {
+            $('#empty_row').show();
+        }
+        recalcTotals();
+    });
+
+    $(document).on('input change', '.requested_qty_input', function() {
+        const varId = $(this).data('var-id');
+        checkRowStockWarning(varId);
+        recalcTotals();
+    });
+
+    function checkRowStockWarning(varId) {
+        const requested = parseFloat($(`#qty_input_${varId}`).val()) || 0;
+        const sourceStock = parseFloat($(`#source_stock_${varId}`).val()) || 0;
+        if (requested > sourceStock) {
+            $(`#warning_${varId}`).show();
+        } else {
+            $(`#warning_${varId}`).hide();
+        }
+    }
+
+    function recalcTotals() {
+        let total = 0;
+        $('.requested_qty_input').each(function() {
+            total += parseFloat($(this).val()) || 0;
+        });
+        $('#total_requested_units').text(total.toFixed(2));
+    }
+
+    $('#btn_save_draft').click(function(e) {
+        e.preventDefault();
+        if (addedVariations.size === 0) {
+            toastr.error('Please add at least one product.');
+            return;
+        }
+        $('#submit_request').val('0');
+        $('#product_request_edit_form').submit();
+    });
+
+    $('#btn_submit_request').click(function(e) {
+        e.preventDefault();
+        if (addedVariations.size === 0) {
+            toastr.error('Please add at least one product.');
+            return;
+        }
+        $('#submit_request').val('1');
+        $('#product_request_edit_form').submit();
+    });
+});
+</script>
+@endsection
